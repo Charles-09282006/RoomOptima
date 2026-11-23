@@ -3,32 +3,22 @@
 Predictive room allocation and intelligent scheduling for Gordon College, College of Computer Studies.
 BSCS 3-C · Team Falcons Philippines
 
-A front-end website backed by Supabase. It has no build step, but must be served from a local or deployed web server (not opened as a `file://` URL).
+A front-end website with sample data. No build step and no server needed: open `index.html` in a browser.
 
-## Supabase setup
+## Sample accounts
 
-1. In the Supabase Dashboard for this project, open **SQL Editor**, paste in `supabase/setup.sql`, and run it. This creates the tables, starter rooms, public availability view, and row-level security policies.
-2. In **Authentication → Users**, create the accounts that should be able to sign in. New accounts are assigned the Student role and get a profile automatically. If email confirmation is enabled, confirm each account before signing in. Set profile details in RoomOptima after signing in.
-3. To grant administrator access, run this in the SQL Editor using the administrator's exact email:
+These are not shown on the sign-in page. Use them to try each role.
 
-   ```sql
-   update public.profiles
-   set role = 'admin'
-   where email = 'admin@gordoncollege.edu.ph';
-   ```
-
-   Only trusted project administrators should be promoted. The old sample credentials were browser-only demo accounts and are not automatically created in Supabase; use strong passwords when creating accounts.
-4. Serve the project from `http://localhost` while developing (for example, `python -m http.server 8000` from the project directory). Add your localhost and production origins in the Supabase project's authentication URL configuration.
-
-The browser uses the project's public anon key. It is not a secret; access is controlled by the row-level security policies in the SQL setup. Never put a Supabase `service_role` key in this frontend.
+| Role | Email | Password |
+| --- | --- | --- |
+| Student | marc.bunan@gordoncollege.edu.ph | Student@123 |
+| Administrator | john.lopez@gordoncollege.edu.ph | Admin@1234 |
 
 ## Project structure
 
 ```
 roomoptima/
 ├── index.html            Page markup: landing page, login screen, app shell, modal roots
-├── supabase/
-│   └── setup.sql         Supabase tables, starter rooms, view, triggers and RLS policies
 ├── assets/
 │   └── seal.png          Gordon College seal
 ├── css/
@@ -41,8 +31,8 @@ roomoptima/
 │   └── responsive.css    Breakpoints and reduced motion
 └── js/
     ├── utils.js          DOM and date/time helpers
-    ├── config.js         Supabase connection, equipment, buildings, time slots, icons
-    ├── store.js          Supabase data layer and lookups
+    ├── config.js         Equipment, buildings, floors, time slots, icons
+    ├── store.js          Data layer: sample data, storage, lookups
     ├── ui.js             UI state, HTML builders, modals, toasts
     ├── forms.js          Inline validation engine and shared validators
     ├── policy.js         Terms and Room Use Policy text
@@ -61,7 +51,7 @@ roomoptima/
     └── main.js           Start-up
 ```
 
-Scripts are plain files loaded in order by `index.html` (see the `<script>` list at the bottom). The Supabase JavaScript client is loaded first; the other scripts share one scope, so order matters: `utils`, `config`, `store`, `ui`, `forms`, then everything else, and `main.js` last.
+Scripts are plain files loaded in order by `index.html` (see the `<script>` list at the bottom). They share one scope, so the order matters: `utils`, `config`, `store`, `ui`, `forms`, then everything else, and `main.js` last.
 
 ## How the 12 revisions are covered
 
@@ -81,6 +71,6 @@ Scripts are plain files loaded in order by `index.html` (see the `<script>` list
 
 ## Data
 
-Rooms, bookings, profiles, and booking policy are stored in Supabase. The SQL setup seeds the starter rooms and policy; bookings start empty. Existing browser-only records and demo accounts are not automatically imported—create Supabase Auth users and re-enter any data you want to keep. The landing page reads a restricted schedule view that contains availability only; signed-in students can access their own booking details, while administrators can manage all records. Auth sessions are stored in the browser according to the “Keep me signed in” checkbox. Data access is in `js/store.js`.
+Data is saved in the browser (`localStorage`) so changes survive a refresh. It is not shared between devices. All data access is in `js/store.js`.
 
 The policy text in `js/policy.js` and the building names in `js/config.js` are samples. Replace them with the college's real details.
